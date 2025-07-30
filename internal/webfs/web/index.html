@@ -304,8 +304,9 @@
                                 </div>
                                 <div class="form-group">
                                     <label data-i18n="config.anthropic_base_url">Anthropic Base URL</label>
-                                    <input type="text" id="anthropicBaseUrl" readonly 
-                                        data-i18n-placeholder="config.anthropic_base_url_placeholder">
+                                    <label for="anthropicBaseUrl">
+                                      <input type="text" id="anthropicBaseUrl"
+                                                                         data-i18n-placeholder="config.anthropic_base_url_placeholder"></label>
                                     <div class="form-hint" data-i18n="config.anthropic_base_url_hint">自动获取当前页面的Base URL</div>
                                 </div>
                             </div>
@@ -403,7 +404,7 @@
                                         </label>
                                         <div class="form-hint" data-i18n="config.proxy_config_desc">配置HTTP或SOCKS5代理以访问API服务</div>
                                     </div>
-                                    
+
                                     <div class="proxy-config-section" id="proxyConfigSection" style="display: none;">
                                         <div class="form-group">
                                             <label data-i18n="config.proxy_type">代理类型</label>
@@ -412,7 +413,7 @@
                                                 <option value="socks5" data-i18n="config.proxy_type_socks5">SOCKS5代理</option>
                                             </select>
                                         </div>
-                                        
+
                                         <div class="proxy-type-config" id="httpProxyConfig">
                                             <div class="form-group">
                                                 <label data-i18n="config.http_proxy">HTTP代理地址</label>
@@ -421,7 +422,7 @@
                                                 <div class="form-hint" data-i18n="config.http_proxy_hint">HTTP代理服务器地址，格式：http://host:port</div>
                                             </div>
                                         </div>
-                                        
+
                                         <div class="proxy-type-config" id="socks5ProxyConfig" style="display: none;">
                                             <div class="form-group">
                                                 <label data-i18n="config.socks5_proxy">SOCKS5代理地址</label>
@@ -442,7 +443,7 @@
                                                 <div class="form-hint" data-i18n="config.socks5_password_hint">SOCKS5代理的密码（如果需要认证）</div>
                                             </div>
                                         </div>
-                                        
+
                                         <div class="form-group">
                                             <label class="checkbox-label">
                                                 <input type="checkbox" id="ignoreSSL">
@@ -450,7 +451,7 @@
                                             </label>
                                             <div class="form-hint" data-i18n="config.ignore_ssl_hint">跳过SSL证书验证（仅在测试环境使用）</div>
                                         </div>
-                                        
+
                                         <div class="proxy-test-section" id="proxyTestSection" style="display: none;">
                                             <div class="form-group">
                                                 <label data-i18n="config.proxy_test_url">测试URL</label>
@@ -464,7 +465,7 @@
                                                 </div>
                                                 <div class="form-hint">测试代理连接是否正常工作</div>
                                             </div>
-                                            
+
                                             <div class="proxy-test-result" id="proxyTestResult" style="display: none;"></div>
                                         </div>
                                     </div>
@@ -571,7 +572,7 @@
                                 </tr>
                             </tbody>
                         </table>
-                        
+
                         <!-- 分页容器 -->
                         <div class="pagination-container" id="usersPagination"></div>
                     </div>
@@ -629,7 +630,7 @@
                         <div class="help-section">
                             <h3 data-i18n="help.step1_title">1️⃣ 安装 Node.js</h3>
                             <p data-i18n="help.step1_desc">确保 Node.js 版本 ≥ 18.0（已安装可跳过）</p>
-                            
+
                             <div class="code-block">
                                 <div class="code-header">
                                     <span data-i18n="help.ubuntu_debian">Ubuntu / Debian 用户</span>
@@ -684,14 +685,14 @@ claude --version</code></pre>
 
                         <div class="help-section">
                             <h3 data-i18n="help.step3_title">3️⃣ 开始使用</h3>
-                            
+
                             <div class="config-info">
                                 <div class="config-item">
                                     <h4 data-i18n="help.auth_token_title">获取 Auth Token</h4>
                                     <p data-i18n="help.auth_token_desc">ANTHROPIC_AUTH_TOKEN：注册后在 API令牌 页面点击 添加令牌 获得（以 sk- 开头）</p>
                                     <p data-i18n="help.auth_token_note">名称随意，额度建议设为无限额度，其他保持默认设置即可</p>
                                 </div>
-                                
+
                                 <div class="config-item">
                                     <h4 data-i18n="help.api_url_title">API地址</h4>
                                     <p data-i18n="help.api_url_desc">ANTHROPIC_BASE_URL：<span id="currentDomain" class="domain-highlight">https://anyrouter.top</span> 是本站的 API 服务地址，与主站地址相同</p>
@@ -701,7 +702,7 @@ claude --version</code></pre>
                             <div class="code-block">
                                 <div class="code-header">
                                     <span data-i18n="help.usage_commands">使用命令</span>
-                                    <button class="copy-btn" data-copy="export ANTHROPIC_AUTH_TOKEN=sk-... 
+                                    <button class="copy-btn" data-copy="export ANTHROPIC_AUTH_TOKEN=sk-...
 export ANTHROPIC_BASE_URL=https://anyrouter.top
 claude" id="usageCommandsCopy">
                                         <svg viewBox="0 0 24 24" width="16" height="16">
@@ -709,7 +710,7 @@ claude" id="usageCommandsCopy">
                                         </svg>
                                     </button>
                                 </div>
-                                <pre><code id="usageCommands">export ANTHROPIC_AUTH_TOKEN=sk-... 
+                                <pre><code id="usageCommands">export ANTHROPIC_AUTH_TOKEN=sk-...
 export ANTHROPIC_BASE_URL=https://anyrouter.top
 claude</code></pre>
                             </div>
@@ -733,7 +734,7 @@ claude</code></pre>
                         <div class="help-section">
                             <h3 data-i18n="help.step4_title">4️⃣ 配置环境变量（推荐）</h3>
                             <p data-i18n="help.step4_desc">为避免每次重复输入，可将环境变量写入 bash_profile 和 bashrc：</p>
-                            
+
                             <div class="code-block">
                                 <div class="code-header">
                                     <span data-i18n="help.env_config">环境变量配置</span>
@@ -850,7 +851,7 @@ claude</code></pre>
             const input = document.getElementById(inputId);
             const toggleBtn = input.parentNode.querySelector('.password-toggle-btn');
             const eyeIcon = toggleBtn.querySelector('.eye-icon');
-            
+
             if (input.type === 'password') {
                 input.type = 'text';
                 // Show "hide" icon when password is visible
