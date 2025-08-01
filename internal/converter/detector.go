@@ -571,7 +571,7 @@ func (fd *FormatDetector) DetectCapabilities(baseURL, apiKey string, format APIF
 }
 
 // detectModels attempts to detect available models for a provider
-func (fd *FormatDetector) detectModels(baseURL, apiKey string, format APIFormat) ([]string, error) {
+func (fd *FormatDetector) detectModels(_ /* baseURL */, _ /* apiKey */ string, format APIFormat) ([]string, error) {
 	// This is a simplified implementation - in practice, you'd make actual API calls
 	switch format {
 	case FormatOpenAI:
@@ -586,7 +586,7 @@ func (fd *FormatDetector) detectModels(baseURL, apiKey string, format APIFormat)
 }
 
 // runCapabilityTest runs a single capability test
-func (fd *FormatDetector) runCapabilityTest(baseURL, apiKey string, format APIFormat, test CapabilityTest) CapabilityResult {
+func (fd *FormatDetector) runCapabilityTest(_ /* baseURL */, _ /* apiKey */ string, format APIFormat, test CapabilityTest) CapabilityResult {
 	startTime := time.Now()
 
 	// This is a simplified implementation

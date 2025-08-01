@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"ccany/internal/app"
@@ -146,6 +147,17 @@ func (h *EnhancedMessagesHandler) CreateMessage(c *gin.Context) {
 		claudeReq.Model = routedModel
 	}
 
+	// Check if we should route to native Gemini API
+	if h.isGeminiEndpoint(cfg.OpenAIBaseURL) {
+		h.logger.WithFields(logrus.Fields{
+			"request_id": requestID,
+			"base_url":   cfg.OpenAIBaseURL,
+		}).Info("Routing to native Gemini API")
+
+		h.handleGeminiRequest(c, requestID, &claudeReq, cfg)
+		return
+	}
+
 	// Convert Claude request to OpenAI format
 	openaiReq, err := converter.ConvertClaudeToOpenAI(&claudeReq, cfg.BigModel, cfg.SmallModel)
 	if err != nil {
@@ -222,7 +234,7 @@ func (h *EnhancedMessagesHandler) handleClaudeCodeStreamingRequest(c *gin.Contex
 			h.logger.WithField("request_id", requestID).Warn("Request context cancelled")
 			hasError = true
 			streamError = ctx.Err()
-			break
+			goto exitLoop
 		default:
 		}
 
@@ -244,6 +256,7 @@ func (h *EnhancedMessagesHandler) handleClaudeCodeStreamingRequest(c *gin.Contex
 		}
 	}
 
+exitLoop:
 	// Update usage tokens
 	h.streamingService.UpdateUsageTokens(streamCtx, totalInputTokens, totalOutputTokens)
 
@@ -872,4 +885,55 @@ func (h *EnhancedMessagesHandler) TestOpenAIModel(c *gin.Context) {
 		"response_id":   openaiResp.ID,
 		"response_text": openaiResp.Choices[0].Message.Content,
 	})
+}
+
+// isGeminiEndpoint checks if the base URL is a Gemini endpoint
+func (h *EnhancedMessagesHandler) isGeminiEndpoint(baseURL string) bool {
+	return strings.Contains(baseURL, "generativelanguage.googleapis.com")
+}
+
+// handleGeminiRequest handles requests routed to native Gemini API
+func (h *EnhancedMessagesHandler) handleGeminiRequest(c *gin.Context, requestID string, claudeReq *models.ClaudeMessagesRequest, cfg *config.Config) {
+	// Create Gemini client
+	geminiClient := client.NewGeminiClient(cfg.OpenAIAPIKey, cfg.OpenAIBaseURL, cfg.RequestTimeout, h.logger)
+
+	// Convert Claude request to Gemini format
+	geminiConverter := converter.NewGeminiConverter()
+	geminiReq, err := geminiConverter.ConvertFromClaude(claudeReq)
+	if err != nil {
+		h.logger.WithError(err).Error("Failed to convert Claude request to Gemini format")
+		c.JSON(http.StatusBadRequest, converter.CreateClaudeErrorResponse("invalid_request_error", "Failed to convert request to Gemini format"))
+		return
+	}
+
+	// Create context with timeout
+	ctx, cancel := context.WithTimeout(c.Request.Context(), time.Duration(cfg.RequestTimeout)*time.Second)
+	defer cancel()
+
+	// Make request to Gemini API
+	geminiResp, err := geminiClient.CreateChatCompletion(ctx, claudeReq.Model, geminiReq)
+	if err != nil {
+		h.logger.WithError(err).Error("Gemini API request failed")
+		c.JSON(http.StatusBadGateway, converter.CreateClaudeErrorResponse("api_error", fmt.Sprintf("Gemini API error: %v", err)))
+		return
+	}
+
+	// Convert Gemini response back to Claude format
+	claudeResp, err := geminiConverter.ConvertToClaude(geminiResp, claudeReq)
+	if err != nil {
+		h.logger.WithError(err).Error("Failed to convert Gemini response to Claude format")
+		c.JSON(http.StatusInternalServerError, converter.CreateClaudeErrorResponse("internal_error", "Failed to convert response"))
+		return
+	}
+
+	// Log successful response
+	h.logger.WithFields(logrus.Fields{
+		"request_id":    requestID,
+		"model":         claudeReq.Model,
+		"input_tokens":  claudeResp.Usage.InputTokens,
+		"output_tokens": claudeResp.Usage.OutputTokens,
+	}).Info("Gemini request completed successfully")
+
+	// Return Claude-compatible response
+	c.JSON(http.StatusOK, claudeResp)
 }

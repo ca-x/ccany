@@ -736,14 +736,6 @@ func (h *ConfigHandler) maskSensitiveValue(key string, value interface{}) interf
 	return value
 }
 
-// maskSensitiveConfigValue masks sensitive configuration values for API responses
-func (h *ConfigHandler) maskSensitiveConfigValue(key, value string) string {
-	if h.isEncryptedConfig(key) && value != "" {
-		return "***masked***"
-	}
-	return value
-}
-
 // getConfigCategory gets configuration category
 func (h *ConfigHandler) getConfigCategory(key string) string {
 	switch key {
@@ -975,9 +967,10 @@ func (h *ConfigHandler) TestProxy(c *gin.Context) {
 		IgnoreSSL: req.IgnoreSSL,
 	}
 
-	if req.ProxyConfig.Type == "http" {
+	switch req.ProxyConfig.Type {
+	case "http":
 		proxyConfig.HTTPProxy = req.ProxyConfig.Address
-	} else if req.ProxyConfig.Type == "socks5" {
+	case "socks5":
 		proxyConfig.SOCKS5Proxy = req.ProxyConfig.Address
 		proxyConfig.SOCKS5ProxyUser = req.ProxyConfig.Username
 		proxyConfig.SOCKS5ProxyPassword = req.ProxyConfig.Password

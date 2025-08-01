@@ -347,7 +347,7 @@ func (h *UnifiedAPIHandler) forwardRequest(ctx context.Context, targetChannel *c
 }
 
 // forwardStreamingRequest forwards a streaming request
-func (h *UnifiedAPIHandler) forwardStreamingRequest(c *gin.Context, targetChannel *channel.Channel, requestBody []byte, sourceFormat, targetFormat converter.APIFormat) {
+func (h *UnifiedAPIHandler) forwardStreamingRequest(c *gin.Context, targetChannel *channel.Channel, requestBody []byte, _ /* sourceFormat */, _ /* targetFormat */ converter.APIFormat) {
 	// This is a simplified implementation
 	// In production, you'd want to handle actual streaming with proper SSE parsing and conversion
 

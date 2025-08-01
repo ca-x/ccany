@@ -327,9 +327,7 @@ func constructBaseURL(baseURL string) string {
 	}
 
 	// Handle trailing slash - always remove it
-	if strings.HasSuffix(baseURL, "/") {
-		baseURL = strings.TrimSuffix(baseURL, "/")
-	}
+	baseURL = strings.TrimSuffix(baseURL, "/")
 
 	// Check if URL already contains /v1 - don't add another one
 	if strings.Contains(baseURL, "/v1") {
